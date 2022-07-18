@@ -8,7 +8,7 @@ const login = async (req, res) => {
   try {
     const user = await User.findOne({
       userName: req.body.name,
-      // passWord: req.body.password,
+      
     });
 
     if (await bcrypt.compare(req.body.password, user.passWord)) {
@@ -22,6 +22,9 @@ const login = async (req, res) => {
       );
 
       return res.json({ user: user, token: token });
+    }
+    else{
+      return res.status(400).send({status:"user not found"})
     }
   } catch (error) {
     res.json({ messege: error });
@@ -46,8 +49,7 @@ const register = async (req, res) => {
 
 const profile = async (req, res) => {
   try {
-    const user = await User.findOne({userName: req.user.username} );
-    
+    const user = await User.findOne({ userName: req.user.username });
     res.send({ user: user });
   } catch (error) {
     res.send({ messege: error });
