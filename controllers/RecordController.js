@@ -8,9 +8,10 @@ const Record = require("../Models/Record");
 
 const add = async (req, res) => {
   const rtype = req.body.rType;
+  console.log(req.user.userid);
   try {
     const record = await Record.create({
-      user: req.body.user,
+      user: req.user.userid,
       account: req.body.account,
       rType: req.body.rType,
       amount: req.body.rType === "plus" ? req.body.amount : -req.body.amount,
@@ -18,13 +19,13 @@ const add = async (req, res) => {
       paymentType: req.body.paymentType,
       date: req.body.date,
     });
-
+   
     const newrecord = await Record.aggregate([
-      { $match: { account: new mongoose.Types.ObjectId(req.body.account) } },
+      { $match: { account: new mongoose.Types.ObjectId(record.account) } },
       { $group: { _id: "$records", total: { $sum: "$amount" } } },
     ]);
-    console.log(newrecord);
-    const acc = await account.findOneAndUpdate(
+    // console.log(newrecord);
+    const acc = await Account.findOneAndUpdate(
       { _id: req.body.account },
       {
         $push: { records: new mongoose.Types.ObjectId(newrecord._id) },
@@ -34,7 +35,7 @@ const add = async (req, res) => {
     );
     // acc.balance = newrecord[0].total;
     // await acc.save();
-    console.log(acc);
+   
 
     res.status(201).send({
       message: "success",
@@ -42,7 +43,7 @@ const add = async (req, res) => {
       account: acc,
     });
   } catch (error) {
-    res.send(500, { messege: error });
+    res.status(400).send( { messege: error });
   }
 };
 

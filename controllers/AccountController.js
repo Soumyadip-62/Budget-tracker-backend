@@ -9,7 +9,7 @@ const add = async (req, res) => {
   console.log(req.body);
   try {
     const acc = await Account.create({
-      user: req.body.user,
+      user: req.user.userid,
       accName: req.body.accName,
       accType: req.body.accType,
       balance: req.body.balance,
@@ -17,23 +17,22 @@ const add = async (req, res) => {
     });
 
     const user = await User.findOneAndUpdate(
-      { _id: req.body.user },
+      { _id: req.user.userid },
       {
         $push: { accounts: new mongoose.Types.ObjectId(acc._id) },
       },
       { new: true }
     );
-    res.send({ status: "success", account: acc, updateduser: user });
+    res.send({ status: "success", account: acc });
   } catch (error) {
-    res.send({ messege: error });
+    res.status(400).send({ messege: error });
   }
 };
 
 const accountList = async (req, res) => {
-  console.log(req.headers.authorization);
   try {
     const acc = await Account.find({
-      user: req.params.uid,
+      user: req.user.userid,
     });
     res.send({ accounts: acc });
   } catch (error) {
@@ -42,14 +41,23 @@ const accountList = async (req, res) => {
 };
 
 const deleteAccount = async (req, res) => {
+  console.log(req.params.aid);
   try {
     const delacc = await Account.deleteOne({
       _id: req.params.aid,
     });
-    res.send({ status: "Accound Deleted" });
+    const user = await User.findOneAndUpdate(
+      { _id: req.user.userid },
+      {
+        $pull: { accounts: req.params.aid },
+      },
+      { new: true }
+    );
+    
+    res.status(200).send({ status: "Accound Deleted" });
   } catch (error) {
-    res.send({ messege: error });
+    res.status(400).send({ messege: error });
   }
-}
+};
 
-module.exports = { add, accountList, deleteAccount}
+module.exports = { add, accountList, deleteAccount };

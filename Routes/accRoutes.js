@@ -8,10 +8,13 @@ const {
 } = require("../controllers/AccountController");
 const Account = require("../Models/Account");
 const User = require("../Models/User");
+const authenticator = require("../middleware/authenticator");
+
+
 //creating account
-acc.post("/add", add);
+acc.post("/add", authenticator, add);
 //Getting account details by UserId
-acc.get("/get/:uid", accountList);
+acc.get("/get", authenticator, accountList);
 //deleteing account
-acc.post("/del/:aid", deleteAccount);
+acc.get("/delete/:aid", authenticator, deleteAccount);
 module.exports = acc;

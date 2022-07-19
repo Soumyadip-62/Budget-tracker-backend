@@ -3,6 +3,7 @@ const rec = express.Router();
 const mongoose = require("mongoose");
 const Record = require("../Models/Record");
 const account = require("../Models/Account");
+const authenticator = require('../middleware/authenticator')
 const {
   add,
   RecordsbyAccount,
@@ -11,7 +12,7 @@ const {
 } = require("../controllers/RecordController");
 
 //adding a record
-rec.post("/add", add);
+rec.post("/add", authenticator, add);
 //getting records by accountID
 rec.post("/get/acc/:aid", RecordsbyAccount);
 //getting records by userID
