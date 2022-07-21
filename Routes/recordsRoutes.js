@@ -3,6 +3,8 @@ const rec = express.Router();
 const mongoose = require("mongoose");
 const Record = require("../Models/Record");
 const account = require("../Models/Account");
+const { body, validationResult } = require("express-validator");
+
 const authenticator = require('../middleware/authenticator')
 const {
   add,
@@ -12,12 +14,19 @@ const {
 } = require("../controllers/RecordController");
 
 //adding a record
-rec.post("/add", authenticator, add);
+rec.post(
+  "/add",
+  body("account").isMongoId(),
+  body("rType"),
+  body("amount").isNumeric(),
+  authenticator,
+  add
+);
 //getting records by accountID
-rec.post("/get/acc/:aid", RecordsbyAccount);
+rec.get("/get/acc/:aid", authenticator, RecordsbyAccount);
 //getting records by userID
-rec.post("/get/user/:uid", RecordsbyUser);
+rec.get("/get/user", authenticator, RecordsbyUser);
 //Deletes a record by ID
-rec.post("/del/:Id", deleteRecord);
+rec.get("/del/:Id", authenticator, deleteRecord);
 
 module.exports = rec;

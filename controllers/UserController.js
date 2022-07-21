@@ -2,9 +2,18 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../Models/User");
+const { body, validationResult } = require("express-validator");
 
 const login = async (req, res) => {
   console.log(req.body);
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array(),
+    });
+  }
   try {
     const user = await User.findOne({
       userName: req.body.name,
@@ -12,8 +21,8 @@ const login = async (req, res) => {
 
     if (await bcrypt.compare(req.body.password, user.passWord)) {
       const token = jwt.sign(
-        { 
-          userid:user._id,
+        {
+          userid: user._id,
           username: user.userName,
           email: user.email,
           password: user.passWord,
@@ -32,6 +41,14 @@ const login = async (req, res) => {
 
 const register = async (req, res) => {
   console.log(req.body);
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array(),
+    });
+  }
   try {
     const hashPassword = await bcrypt.hash(req.body.pword, 10);
     const user = await User.create({
@@ -42,17 +59,27 @@ const register = async (req, res) => {
     });
     res.json({ status: "ok", user: user });
   } catch (error) {
-    res.status(500).send("something went wrong");
+    if (error.keyPattern.email === 1) {
+      return res.status(400).send({ error: "Email is already taken" });
+    }
+    res.status(500).send({ messege: "something went wrong" });
   }
 };
 
 const profile = async (req, res) => {
   try {
     const user = await User.findOne({ userName: req.user.username });
+    if (user == null) {
+      return res.status(400).send({message: "User doesn't exists"})
+    }
     res.send({ user: user });
   } catch (error) {
     res.send({ messege: error });
   }
 };
 
-module.exports = { login, register, profile };
+const logout = async(req,res) =>{
+
+
+}
+module.exports = { login, register, profile, logout };

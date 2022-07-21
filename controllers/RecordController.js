@@ -3,12 +3,22 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const Account = require("../Models/Account");
+const { body, validationResult } = require("express-validator");
+
 const User = require("../Models/User");
+
 const Record = require("../Models/Record");
 
 const add = async (req, res) => {
   const rtype = req.body.rType;
   console.log(req.user.userid);
+ const errors = validationResult(req)
+ if (!errors.isEmpty()) {
+   return res.status(400).json({
+     success: false,
+     errors: errors.array(),
+   });
+ }
   try {
     const record = await Record.create({
       user: req.user.userid,
@@ -53,33 +63,31 @@ const RecordsbyAccount = async (req, res) => {
     const record = await Record.find({
       account: req.params.aid,
     });
-    res.send(record);
+    res.status(200).send({records : record});
   } catch (error) {
-    res.send({ messege: error });
+    res.status(404).send({ messege: error });
   }
 };
 
 const RecordsbyUser = async (req, res) => {
-  console.log(req.params.aid);
   try {
     const record = await Record.find({
-      user: req.params.uid,
+      user: req.user.userid,
     });
-    res.json(record);
+    res.status(200).send({records : record});
   } catch (error) {
-    res.send({ messege: error });
+    res.status(404).send({ messege: error });
   }
 };
 
 const deleteRecord = async (req, res) => {
-  console.log(req.params.Id);
   try {
     const del = await Record.findByIdAndDelete({
       _id: req.params.Id,
     });
-    res.send({ status: 200 });
+    res.status(200).send({ status: "Deleted" });
   } catch (error) {
-    res.send({ messege: error });
+    res.status(404).send({ messege: error });
   }
 };
 module.exports = { add, RecordsbyAccount, RecordsbyUser, deleteRecord };

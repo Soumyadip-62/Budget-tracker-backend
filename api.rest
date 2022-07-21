@@ -4,16 +4,16 @@ POST http://localhost:1337/user/register
 Content-Type: application/json
 
 {
-    "uname":"rakesh",
+    "uname":"caspian",
     "fname":"soumyadip",
-    "email":"test2@email.com",
-    "pword":"123456789"
+    "email":"test2email.com",
+    "pword":"1234"
 
 }
 ###
 
 GET http://localhost:1337/user/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJha2VzaCIsImVtYWlsIjoidGVzdDJAZW1haWwuY29tIiwicGFzc3dvcmQiOiIkMmIkMTAkWEFUbzMuM0c5VVloRXhOand4Qk5QTzVkUXpRUThUai43WnZycTlTY0NYZVpjMXdkNWM3TS4iLCJpYXQiOjE2NTgxNTE1OTR9.x9U2JvlkbGuOxDCMdFgGXCMMkSWpciWlfk57VEFph1g
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInRcCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJha2VzaCIsImVtYWlsIjoidGVzdDJAZW1haWwuY29tIiwicGFzc3dvcmQiOiIkMmIkMTAkWEFUbzMuM0c5VVloRXhOand4Qk5QTzVkUXpRUThUai43WnZycTlTY0NYZVpjMXdkNWM3TS4iLCJpYXQiOjE2NTgxNTE1OTR9.x9U2JvlkbGuOxDCMdFgGXCMMkSWpciWlfk57VEFph1g
 
 ###
 POST http://localhost:1337/user/login
@@ -21,7 +21,7 @@ Content-Type: application/json
 
 {
     "name":"rakesh",
-    "password":"123456789"
+    "password":"123"
 }
 
 ###
@@ -42,3 +42,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI2MmQ1M
 ###
 GET http://localhost:1337/acc/get 
 Authorization: Brearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI2MmQ1M2NkZmI2MTg3MjU1N2M0MzYzZWMiLCJ1c2VybmFtZSI6InJha2VzaCIsImVtYWlsIjoidGVzdDJAZW1haWwuY29tIiwicGFzc3dvcmQiOiIkMmIkMTAkWEFUbzMuM0c5VVloRXhOand4Qk5QTzVkUXpRUThUai43WnZycTlTY0NYZVpjMXdkNWM3TS4iLCJpYXQiOjE2NTgyNDgzNzl9.imxdRzsNXPuJ7pb6BxJrTocYNbWp-YNPU0jhTCgR4fs
+
+###
+GET http://localhost:1337/rec/get/acc/62d6ddb8ef4397eec791e12a
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI2MmQ1M2NkZmI2MTg3MjU1N2M0MzYzZWMiLCJ1c2VybmFtZSI6InJha2VzaCIsImVtYWlsIjoidGVzdDJAZW1haWwuY29tIiwicGFzc3dvcmQiOiIkMmIkMTAkWEFUbzMuM0c5VVloRXhOand4Qk5QTzVkUXpRUThUai43WnZycTlTY0NYZVpjMXdkNWM3TS4iLCJpYXQiOjE2NTgyNDgzNzl9.imxdRzsNXPuJ7pb6BxJrTocYNbWp-YNPU0jhTCgR4fs
+
+###
+GET http://localhost:1337/rec/get/user
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI2MmQ1M2NkZmI2MTg3MjU1N2M0MzYzZWMiLCJ1c2VybmFtZSI6InJha2VzaCIsImVtYWlsIjoidGVzdDJAZW1haWwuY29tIiwicGFzc3dvcmQiOiIkMmIkMTAkWEFUbzMuM0c5VVloRXhOand4Qk5QTzVkUXpRUThUai43WnZycTlTY0NYZVpjMXdkNWM3TS4iLCJpYXQiOjE2NTgyNDgzNzl9.imxdRzsNXPuJ7pb6BxJrTocYNbWp-YNPU0jhTCgR4fs

@@ -11,7 +11,9 @@ const User = mongoose.Schema({
   },
   email: {
     type: String,
+    unique: true,
     required: true,
+    dropDups: true,
   },
   passWord: {
     type: String,
