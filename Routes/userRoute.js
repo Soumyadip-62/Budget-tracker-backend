@@ -14,7 +14,7 @@ const authenticator = require("../middleware/authenticator");
 api.post(
   "/login",
   body("email").isEmail().normalizeEmail(),
-  body("pword").isLength({
+  body("password").isLength({
     min: 6,
   }),
   login
@@ -28,7 +28,7 @@ api.post(
   register
 ); 
 api.get("/profile", authenticator, profile);
-// api.get("/logout", authenticator, logout)
+api.get("/logout", authenticator, logout)
 
 
 

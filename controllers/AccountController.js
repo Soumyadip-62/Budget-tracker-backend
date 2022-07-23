@@ -4,9 +4,19 @@ const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const Account = require("../Models/Account");
 const User = require("../Models/User");
+const { body, validationResult } = require("express-validator");
+
 
 const add = async (req, res) => {
   console.log(req.body);
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors);
+    return res.status(400).json({
+      success: false,
+      errors: errors.array(),
+    });
+  }
   try {
     const acc = await Account.create({
       user: req.user.userid,

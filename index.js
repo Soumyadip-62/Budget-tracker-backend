@@ -21,9 +21,9 @@ app.use("/acc", accRoute);
 app.use("/rec", recordRoute);
 //connecting to the DB
 mongoose.connect(
-  "mongodb+srv://soumyabudgetapp:5i4XBejVBwXKpvD@cluster0.yvtbg.mongodb.net/?retryWrites=true&w=majority",
+  process.env.DB,
   () => {
-    console.log("Connected to DB");
+    console.log("Connected to DataBase");
   }
 );
 

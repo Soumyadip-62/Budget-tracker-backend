@@ -9,10 +9,18 @@ const {
 const Account = require("../Models/Account");
 const User = require("../Models/User");
 const authenticator = require("../middleware/authenticator");
-
+const { body, validationResult } = require("express-validator");
 
 //creating account
-acc.post("/add", authenticator, add);
+acc.post(
+  "/add",
+  body("accName"),
+  body("accType"),
+  body("balance").isNumeric(),
+  body("currency"),
+  authenticator,
+  add
+);
 //Getting account details by UserId
 acc.get("/get", authenticator, accountList);
 //deleteing account
