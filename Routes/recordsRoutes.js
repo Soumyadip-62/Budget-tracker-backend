@@ -15,8 +15,7 @@ const {
 
 //adding a record
 rec.post(
-  "/add",
-  body("account").isMongoId(),
+  "/:id/add",
   body("rType"),
   body("amount").isNumeric(),
   authenticator,

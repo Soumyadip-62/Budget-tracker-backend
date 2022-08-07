@@ -4,8 +4,8 @@ const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const Account = require("../Models/Account");
 const User = require("../Models/User");
+const Record = require("../Models/Record");
 const { body, validationResult } = require("express-validator");
-
 
 const add = async (req, res) => {
   console.log(req.body);
@@ -53,18 +53,29 @@ const accountList = async (req, res) => {
 const deleteAccount = async (req, res) => {
   console.log(req.params.aid);
   try {
-    const delacc = await Account.deleteOne({
+    const delacc = await Account.findByIdAndDelete({
       _id: req.params.aid,
     });
+    console.log(delacc);
+    if (!delacc) {
+      res.status(404).send({ message: "Can not find account!" });
+    }
     const user = await User.findOneAndUpdate(
       { _id: req.user.userid },
       {
-        $pull: { accounts: req.params.aid },
+        $pull: { accounts: delacc._id },
       },
-      { new: true }
+      { new: true, upsert: true }
     );
-    
-    res.status(200).send({ status: "Accound Deleted" });
+    console.log(user);
+
+    const delrec = await Record.deleteMany({
+      account: delacc._id,
+    });
+    console.log(delrec);
+    res
+      .status(200)
+      .send({ status: "Accound Deleted", deleted_account: delacc, user: user });
   } catch (error) {
     res.status(400).send({ messege: error });
   }
