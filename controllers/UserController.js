@@ -18,7 +18,7 @@ const login = async (req, res) => {
   try {
     const user = await User.findOne({
       email: req.body.email,
-    });
+    }).select("+passWord");
 
     if (await bcrypt.compare(req.body.password, user.passWord)) {
       const token = jwt.sign(
@@ -33,16 +33,25 @@ const login = async (req, res) => {
           expiresIn: "7d", // expires in 7 days
         }
       );
+      // console.log(token);
       await Whitelist.create({
         token: token,
       }).then((res) => console.log(res));
-
-      return res.json({ user: user, token: token });
+      return res.json({
+        user: {
+          _id: user._id,
+          userName: user.userName,
+          fullName: user.fullName,
+          email: user.email,
+          accounts: user.accounts,
+        },
+        token: token,
+      });
     } else {
       return res.status(400).send({ status: "user not found" });
     }
   } catch (error) {
-    res.json({ messege: error });
+    res.status(400).json({ messege: error });
   }
 };
 
@@ -69,13 +78,13 @@ const register = async (req, res) => {
     if (error.keyPattern.email === 1) {
       return res.status(400).send({ error: "Email is already taken" });
     }
-    res.status(500).send({ messege: "something went wrong" });
+    res.status(400).send({ messege: "something went wrong" });
   }
 };
 
 const profile = async (req, res) => {
   try {
-    const user = await User.findOne({ userName: req.user.username });
+    const user = await User.findOne({ _id: req.user.userid });
     if (user == null) {
       return res.status(400).send({ message: "User doesn't exists" });
     }
@@ -84,21 +93,103 @@ const profile = async (req, res) => {
     res.send({ messege: error });
   }
 };
+const editProfile = async (req, res) => {
+  try {
+    const user = await User.findOneAndUpdate(
+      {
+        _id: req.user.userid,
+      },
+      {
+        $set: { userName: req.body.uname, fullName: req.body.fname },
+      },
+      { new: true, upsert: true }
+    );
+
+    res
+      .status(200)
+      .send({ message: "Profile Updated successfully", user: user });
+  } catch (error) {
+    res.status(400).send({ message: error });
+  }
+};
+const changePassword = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array(),
+    });
+  }
+  try {
+    if (await bcrypt.compare(req.body.password, req.user.password)) {
+      if (req.body.new_password1 !== req.body.new_password2) {
+        res.status(400).send({ message: "Passwords doesn't match" });
+      }
+      const hashPassword = await bcrypt.hash(req.body.new_password2, 10);
+      const user = await User.findOneAndUpdate(
+        {
+          _id: req.user.userid,
+        },
+        {
+          $set: { passWord: hashPassword },
+        },
+        { new: true, upsert: true }
+      );
+      const token = jwt.sign(
+        {
+          userid: user._id,
+          username: user.userName,
+          email: user.email,
+          password: user.passWord,
+        },
+        process.env.ACCES_TOKEN_SECRET,
+        {
+          expiresIn: "7d", // expires in 7 days
+        }
+      );
+    const blackListedtoken = await Whitelist.findOneAndDelete({ token: req.token });
+      // console.log(token);
+      await Whitelist.create({
+        token: token,
+      }).then((res) => console.log(res));
+      res.status(200).send({
+        message: "Password Updated successfully",
+        user: {
+          _id: user._id,
+          userName: user.userName,
+          fullName: user.fullName,
+          email: user.email,
+          accounts: user.accounts,
+        },
+        token: token,
+      });
+    } else {
+      res.status(400).send({ message: "Incorrect password" });
+    }
+  } catch (error) {
+    res.status(400).send({ message: error });
+  }
+};
 
 const logout = async (req, res) => {
-// console.log("token from req",req.token);
+  // console.log("token from req",req.token);
   try {
     const token = await Whitelist.findOneAndDelete({ token: req.token });
     // console.log("token",token);
     if (token) {
-      res.status(200).send({message : "Logged out successfully!"})
+      res.status(200).send({ message: "Logged out successfully!" });
+    } else {
+      res.send("something went wrong");
     }
-    else{
-      res.send("something went wrong")
-    }
-
   } catch (error) {
-    res.send(422, { error : error})
+    res.send(422, { error: error });
   }
 };
-module.exports = { login, register, profile, logout };
+module.exports = {
+  login,
+  register,
+  profile,
+  logout,
+  editProfile,
+  changePassword,
+};

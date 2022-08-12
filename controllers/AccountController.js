@@ -50,6 +50,38 @@ const accountList = async (req, res) => {
   }
 };
 
+const editAccount =async (req, res) => {
+  console.log(req.body);
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors);
+    return res.status(400).json({
+      success: false,
+      errors: errors.array(),
+    });
+  }
+  try {
+    const acc = await Account.findOneAndUpdate(
+      {
+        _id: req.params.id,
+      },
+      {
+        $set: {
+          accName: req.body.accName,
+          accType: req.body.accType,
+          balance: req.body.balance,
+          currency: req.body.currency,
+        },
+      },
+      { new: true }
+    );
+
+    res.status(200).send({message:"Account Updated successfully", account: acc})
+  } catch (error) {
+    res.status(400).send({message:error})
+  }
+};
+
 const deleteAccount = async (req, res) => {
   console.log(req.params.aid);
   try {
@@ -81,4 +113,4 @@ const deleteAccount = async (req, res) => {
   }
 };
 
-module.exports = { add, accountList, deleteAccount };
+module.exports = { add, accountList, deleteAccount, editAccount };

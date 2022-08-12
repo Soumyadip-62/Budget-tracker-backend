@@ -7,16 +7,27 @@ const api = express.Router();
 const mongoose = require("mongoose");
 const { body, validationResult } = require("express-validator");
 //!controller imports
-const { register, login, profile, logout } = require("../controllers/UserController");
+const {
+  register,
+  login,
+  profile,
+  logout,
+  editProfile,
+  changePassword,
+} = require("../controllers/UserController");
 const authenticator = require("../middleware/authenticator");
-
 
 api.post(
   "/login",
-  body("email").isEmail().normalizeEmail(),
-  body("password").isLength({
-    min: 6,
-  }),
+  body("email")
+    .isEmail()
+    .normalizeEmail()
+    ,
+  body("password")
+    .isLength({
+      min: 6,
+    })
+    ,
   login
 );
 api.post(
@@ -26,10 +37,23 @@ api.post(
     min: 6,
   }),
   register
-); 
+);
 api.get("/profile", authenticator, profile);
-api.get("/logout", authenticator, logout)
-
-
+api.put("/edit_profile", authenticator, editProfile);
+api.put(
+  "/change_password",
+  body("password").isLength({
+    min: 6,
+  }),
+  body("new_password1").isLength({
+    min: 6,
+  }),
+  body("new_password2").isLength({
+    min: 6,
+  }),
+  authenticator,
+  changePassword
+);
+api.get("/logout", authenticator, logout);
 
 module.exports = api;

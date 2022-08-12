@@ -6,7 +6,6 @@ const Account = require("../Models/Account");
 const { body, validationResult } = require("express-validator");
 
 const User = require("../Models/User");
-
 const Record = require("../Models/Record");
 
 const add = async (req, res) => {
@@ -34,7 +33,6 @@ const add = async (req, res) => {
       { _id: req.params.id },
       {
         $push: { records: new mongoose.Types.ObjectId(record._id) },
-        // TODO if total is 0/null we will add the amount with
 
         // $set: { balance:  record.amount},
       },
@@ -76,13 +74,41 @@ const RecordsbyUser = async (req, res) => {
   }
 };
 
+const editRecord = async (req, res) => {
+  console.log(req.params.id);
+  try {
+    const rec = await Record.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $set: {
+          rType: req.body.rType,
+          amount:
+            req.body.rType === "plus" ? req.body.amount : -req.body.amount,
+          desc: req.body.desc,
+          paymentType: req.body.paymentType,
+          date: req.body.date,
+        },
+      }
+    );
+    // if (rec.amount !== req.body.amount || rec.rType !== rec.body.rType) {
+      const acc = await Account.findOne({ _id: rec.account });
+      acc.balance = acc.balance - rec.amount + (req.body.rType ==="minus"? -req.body.amount : req.body.amount);
+      await acc.save();
+      console.log(acc);
+    // }
+    
+    res.status(200).send({ message: "Successfully Updated Record"  });
+  } catch (error) {
+    res.status(400).send({ message: error });
+  }
+};
 const deleteRecord = async (req, res) => {
   try {
     const del = await Record.findByIdAndDelete({
       _id: req.params.Id,
     });
     if (!del) {
-      res.status(404).send({message: "Can not find account!"})
+      res.status(404).send({ message: "Can not find account!" });
     }
     console.log(del);
     // const newrecord = await Record.aggregate([
@@ -93,13 +119,13 @@ const deleteRecord = async (req, res) => {
     const acc = await Account.findOneAndUpdate(
       { _id: del.account },
       {
-        $pull: { records: del._id},
+        $pull: { records: del._id },
         // $set: { balance: newrecord[0].total },
       },
       { new: true, upsert: true }
     );
     console.log(acc);
-    acc.balance = acc.balance - del.amount 
+    acc.balance = acc.balance - del.amount;
     await acc.save();
     res
       .status(200)
@@ -108,4 +134,10 @@ const deleteRecord = async (req, res) => {
     res.status(404).send({ messege: error });
   }
 };
-module.exports = { add, RecordsbyAccount, RecordsbyUser, deleteRecord };
+module.exports = {
+  add,
+  RecordsbyAccount,
+  RecordsbyUser,
+  deleteRecord,
+  editRecord,
+};

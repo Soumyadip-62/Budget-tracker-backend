@@ -11,8 +11,8 @@ const {
   RecordsbyAccount,
   RecordsbyUser,
   deleteRecord,
+  editRecord,
 } = require("../controllers/RecordController");
-
 //adding a record
 rec.post(
   "/:id/add",
@@ -21,6 +21,8 @@ rec.post(
   authenticator,
   add
 );
+//edit route
+rec.put("/:id/edit", authenticator, editRecord)
 //getting records by accountID
 rec.get("/get/acc/:aid", authenticator, RecordsbyAccount);
 //getting records by userID

@@ -18,6 +18,7 @@ const User = mongoose.Schema({
   passWord: {
     type: String,
     required: true,
+    select: false, //to hide the password in api responces
   },
   accounts: [
     {
