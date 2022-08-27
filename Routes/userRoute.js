@@ -14,20 +14,18 @@ const {
   logout,
   editProfile,
   changePassword,
+  forgetPassword,
+  resetPassword,
+  dashboard,
 } = require("../controllers/UserController");
 const authenticator = require("../middleware/authenticator");
 
 api.post(
   "/login",
-  body("email")
-    .isEmail()
-    .normalizeEmail()
-    ,
-  body("password")
-    .isLength({
-      min: 6,
-    })
-    ,
+  body("email").isEmail().normalizeEmail(),
+  body("password").isLength({
+    min: 6,
+  }),
   login
 );
 api.post(
@@ -55,5 +53,21 @@ api.put(
   changePassword
 );
 api.get("/logout", authenticator, logout);
+api.post(
+  "/forgotpassword",
+  body("email").isEmail().normalizeEmail(),
+  forgetPassword
+);
+api.post(
+  "/resetpassword",
+  body("new_password1").isLength({
+    min: 6,
+  }),
+  body("new_password2").isLength({
+    min: 6,
+  }),
+  resetPassword
+);
+api.get('/dashboard', authenticator,dashboard)
 
 module.exports = api;

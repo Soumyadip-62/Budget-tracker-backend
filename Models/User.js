@@ -15,6 +15,11 @@ const User = mongoose.Schema({
     required: true,
     dropDups: true,
   },
+  secretOtp:{
+type:Number,
+required:false,
+select:false
+  },
   passWord: {
     type: String,
     required: true,
