@@ -29,8 +29,9 @@ mongoose.connect(
   }
 );
 
+
 //port
-app.listen(1337, () => {
+app.listen(process.env.PORT || 1337, () => {
   console.log("server started");
   
 });
