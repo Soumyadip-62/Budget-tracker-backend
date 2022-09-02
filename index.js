@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const userRoute = require("./Routes/userRoute");
 const accRoute = require("./Routes/accRoutes");
 const recordRoute = require("./Routes/recordsRoutes");
+const chartRoute = require('./Routes/chartRoute')
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -19,6 +20,7 @@ app.get("/", (req, res) => {
 app.use("/user", userRoute);
 app.use("/acc", accRoute);
 app.use("/rec", recordRoute);
+app.use('/chart', chartRoute)
 //connecting to the DB
 mongoose.connect(
   process.env.DB,
