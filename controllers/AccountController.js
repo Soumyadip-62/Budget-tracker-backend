@@ -44,6 +44,7 @@ const accountList = async (req, res) => {
     const acc = await Account.find({
       user: req.user.userid,
     });
+    
     res.send({ accounts: acc });
   } catch (error) {
     res.send({ messege: error });

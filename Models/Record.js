@@ -20,6 +20,9 @@ const Record = mongoose.Schema({
   desc: {
     type: String,
   },
+  note: {
+    type: String,
+  },
   paymentType: {
     type: String,
   },

@@ -25,6 +25,7 @@ const add = async (req, res) => {
       rType: req.body.rType,
       amount: req.body.rType === "plus" ? req.body.amount : -req.body.amount,
       desc: req.body.desc,
+      note:req.body.note,
       paymentType: req.body.paymentType,
       date: req.body.date,
     });
@@ -57,7 +58,10 @@ const RecordsbyAccount = async (req, res) => {
     const record = await Record.find({
       account: req.params.aid,
     });
-    res.status(200).send({ records: record });
+    const account = await Account.findOne({
+      _id: req.params.aid,
+    });
+    res.status(200).send({account: account, records: record });
   } catch (error) {
     res.status(404).send({ messege: error });
   }
@@ -67,7 +71,7 @@ const RecordsbyUser = async (req, res) => {
   try {
     const record = await Record.find({
       user: req.user.userid,
-    });
+    }).populate("account");
     res.status(200).send({ records: record });
   } catch (error) {
     res.status(404).send({ messege: error });
@@ -85,12 +89,14 @@ const editRecord = async (req, res) => {
           amount:
             req.body.rType === "plus" ? req.body.amount : -req.body.amount,
           desc: req.body.desc,
+          note:req.body.note,
           paymentType: req.body.paymentType,
           date: req.body.date,
         },
       }
     );
     // if (rec.amount !== req.body.amount || rec.rType !== rec.body.rType) {
+      console.log( "account id =",rec.account);
       const acc = await Account.findOne({ _id: rec.account });
       acc.balance = acc.balance - rec.amount + (req.body.rType ==="minus"? -req.body.amount : req.body.amount);
       await acc.save();
