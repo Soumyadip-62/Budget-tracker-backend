@@ -20,7 +20,7 @@ const authenticator = async (req, res, next) => {
       next();
     });
   } else{
-    res.status(422).send({message: "Invalid Token or Token Has Expired"})
+    res.status(403).send({message: "Invalid Token or Token Has Expired"})
   }
 };
 

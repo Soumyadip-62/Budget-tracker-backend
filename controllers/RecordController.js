@@ -39,8 +39,15 @@ const add = async (req, res) => {
       },
       { new: true, upsert: true }
     );
-    acc.balance = acc.balance + record.amount;
-    await acc.save();
+    // let newBalance = acc.balance + record.amount;
+    // if (newBalance > 0) {
+      
+      acc.balance = acc.balance + record.amount;
+      await acc.save();
+    // }
+    // else{
+    //   return res.status(403).send({error: "Account Balance Cannot be Less Than Zero!"})
+    // }
 
     res.status(201).send({
       message: "success",
